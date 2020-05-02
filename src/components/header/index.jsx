@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import { Modal} from 'antd'
+// import BMap from 'BMap'
 
 import LinkButton from '../link-button'
 import {reqWeather} from '../../api'
@@ -17,9 +18,9 @@ class Header extends Component {
 
   state = {
     currentTime: formateDate(Date.now()), // 当前时间字符串
-    dayPictureUrl: '', // 天气图片url
-    weather: '', // 天气的文本
-    city: '' //所在城市
+    dayPictureUrl: 'http://api.map.baidu.com/images/weather/day/duoyun.png', // 天气图片url
+    weather: '多云转晴', // 天气的文本
+    city: '北京' //所在城市
   }
 
   getTime = () => {
@@ -30,12 +31,7 @@ class Header extends Component {
     }, 1000)
   }
 
-  getWeather = async () => {
-    // 调用接口请求异步获取数据
-    const {dayPictureUrl, weather} = await reqWeather(this.state.city)
-    // 更新状态
-    this.setState({dayPictureUrl, weather})
-  }
+  
 
   getTitle = () => {
     // 得到当前请求路径
@@ -76,6 +72,34 @@ class Header extends Component {
     })
   }
 
+  getCityWether = () =>{
+    const _this = this;
+        
+        var BMap = window.BMap;
+        var geoc = new BMap.Geocoder();
+        var geolocation = new BMap.Geolocation();
+        geolocation.getCurrentPosition(function (r) {
+            geoc.getLocation(r.point, function (rs) {
+                // console.log(rs)   //具体信息可以打印出来看一下，根据需求取值     经纬度，城市，街道等等
+                var addComp = rs.addressComponents;
+                let city = addComp.city;
+                _this.setState({
+                    city:city,  //城市名
+                }, async () => {//获取天气  一定要用回调函数setState是异步的
+                    // 调用接口请求异步获取数据
+                    const { dayPictureUrl, weather } = await reqWeather(_this.state.city)
+                    // console.log(this.state.city,'-------------------------')
+                    // console.log({ dayPictureUrl, weather },'=====================')
+                
+                    // 更新状态
+                    _this.setState({dayPictureUrl, weather})
+                  }
+                )
+            })
+            
+        })
+        
+      }
   /*
   第一次render()之后执行一次
   一般在此执行异步操作: 发ajax请求/启动定时器
@@ -83,33 +107,19 @@ class Header extends Component {
   componentDidMount () {
     // 获取当前的时间
     this.getTime()
+    this.getCityWether()
     // 获取当前天气
-    this.getWeather()
+    // this.getWeather()
 
-    const script = document.createElement("script");
-    script.src = "http://api.map.baidu.com/api?v=2.0&ak=81wpaEGlBjPM4KBAER0jkpg6QlIMupWu";
-    script.async = true;
-    document.body.appendChild(script);
-    const _this=this;
-        var BMap = window.BMap;
-        var geoc = new BMap.Geocoder();
-        var geolocation = new BMap.Geolocation();
-        geolocation.getCurrentPosition(function (r) {
-            geoc.getLocation(r.point, function (rs) {
-                console.log(rs)   //具体信息可以打印出来看一下，根据需求取值     经纬度，城市，街道等等
-                var addComp = rs.addressComponents;
-                let city = addComp.city;
-                _this.setState({
-                    city:city,  //城市名
-                })
-            })
-        })
   }
-  /*
+
+  
   // 不能这么做: 不会更新显示
   componentWillMount () {
-    this.title = this.getTitle()
-  }*/
+    // this.title = this.getTitle()
+    // this.getCity()
+    // console.log(this.getCity())
+  }
 
   /*
   当前组件卸载之前调用
@@ -122,7 +132,7 @@ class Header extends Component {
 
   render() {
 
-    const {currentTime, dayPictureUrl, weather} = this.state
+    const {currentTime, dayPictureUrl, weather,city} = this.state
 
     const username = memoryUtils.user.username
 
@@ -131,13 +141,14 @@ class Header extends Component {
     return (
       <div className="header">
         <div className="header-top">
-          <span>欢迎, {username}</span>
+          <span>欢迎 , {username}</span>
           <LinkButton onClick={this.logout}>退出</LinkButton>
         </div>
         <div className="header-bottom">
           <div className="header-bottom-left">{title}</div>
           <div className="header-bottom-right">
-            <span>{currentTime}</span>
+            <span className='header-bottom-time'>{currentTime}</span>
+            <span>{city}</span>
             <img src={dayPictureUrl} alt="weather"/>
             <span>{weather}</span>
           </div>
