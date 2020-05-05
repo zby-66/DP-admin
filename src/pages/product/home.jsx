@@ -6,7 +6,8 @@ import {
   Button,
   Icon,
   Table,
-  message
+  message,
+  Modal
 } from 'antd'
 
 import LinkButton from '../../components/link-button'
@@ -47,7 +48,7 @@ export default class ProductHome extends Component {
         render: (price) => '¥' + price  // 当前指定了对应的属性, 传入的是对应的属性值
       },
       {
-        width: 100,
+        width: 150,
         title: '状态',
         // dataIndex: 'status',
         render: (product) => {
@@ -55,13 +56,15 @@ export default class ProductHome extends Component {
           const newStatus = status===1 ? 2 : 1
           return (
             <span>
+              <span style={{marginLift:'5px'}}>{status===1 ? '在售' : '已下架'}</span>
               <Button
-                type='primary'
+                style={{marginLeft:'26px'}}
+                type='danger'
+                size='small'
                 onClick={() => this.updateStatus(_id, newStatus)}
               >
                 {status===1 ? '下架' : '上架'}
               </Button>
-              <span>{status===1 ? '在售' : '已下架'}</span>
             </span>
           )
         }
@@ -112,12 +115,20 @@ export default class ProductHome extends Component {
   /*
   更新指定商品的状态
    */
-  updateStatus = async (productId, status) => {
-    const result = await reqUpdateStatus(productId, status)
-    if(result.status===0) {
-      message.success('更新商品成功')
-      this.getProducts(this.pageNum)
-    }
+  updateStatus = (productId, status) => {
+    Modal.confirm({
+      content: '确定执行吗?',
+      onOk: async () => {
+        const result = await reqUpdateStatus(productId, status)
+        // let id = productId.slice(21, 24) * 1 - 475
+        // let num = parseInt(id)
+        // console.log(num)
+        if (result.status === 0) {
+          message.success(`更新商品-${productId}-成功`)//this.state.products[id].name
+          this.getProducts(this.pageNum)
+        }
+      }
+    })
   }
 
   componentWillMount () {
