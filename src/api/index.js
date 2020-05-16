@@ -129,11 +129,13 @@ export const reqWeather = (city) => {
             // 取出需要的数据
             const {
               dayPictureUrl,
-              weather
+              weather,
+              temperature
             } = data.results[0].weather_data[0]
             resolve({
               dayPictureUrl,
-              weather
+              weather,
+              temperature
             })
           } else {
             // 如果失败了

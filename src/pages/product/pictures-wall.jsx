@@ -83,7 +83,7 @@ export default class PicturesWall extends React.Component {
       if(result.status===0) {
         message.success('上传图片成功!')
         const {name, url} = result.data
-        file = fileList[fileList.length-1]
+        file = fileList[fileList.length-1]//上传过程多次，只有最后一次是上传完成
         file.name = name
         file.url = url
       } else {
@@ -121,7 +121,7 @@ export default class PicturesWall extends React.Component {
           onPreview={this.handlePreview}
           onChange={this.handleChange}
         >
-          {fileList.length >= 4 ? null : uploadButton}
+          {fileList.length >= 14 ? null : uploadButton}
         </Upload>
 
         <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>

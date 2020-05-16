@@ -20,7 +20,8 @@ class Header extends Component {
     currentTime: formateDate(Date.now()), // 当前时间字符串
     dayPictureUrl: 'http://api.map.baidu.com/images/weather/day/duoyun.png', // 天气图片url
     weather: '多云转晴', // 天气的文本
-    city: '北京' //所在城市
+    city: '北京' ,//所在城市
+    temperature: ''
   }
 
   getTime = () => {
@@ -87,12 +88,12 @@ class Header extends Component {
                     city:city,  //城市名
                 }, async () => {//获取天气  一定要用回调函数setState是异步的
                     // 调用接口请求异步获取数据
-                    const { dayPictureUrl, weather } = await reqWeather(_this.state.city)
+                    const { dayPictureUrl, weather,temperature } = await reqWeather(_this.state.city)
                     // console.log(this.state.city,'-------------------------')
                     // console.log({ dayPictureUrl, weather },'=====================')
                 
                     // 更新状态
-                    _this.setState({dayPictureUrl, weather})
+                    _this.setState({dayPictureUrl, weather,temperature})
                   }
                 )
             })
@@ -132,7 +133,7 @@ class Header extends Component {
 
   render() {
 
-    const {currentTime, dayPictureUrl, weather,city} = this.state
+    const {currentTime, dayPictureUrl, weather,city,temperature} = this.state
 
     const username = memoryUtils.user.username
 
@@ -151,6 +152,7 @@ class Header extends Component {
             <span>{city}</span>
             <img src={dayPictureUrl} alt="weather"/>
             <span>{weather}</span>
+            <span style={{marginLeft: 5}}>{temperature}</span>
           </div>
         </div>
       </div>
