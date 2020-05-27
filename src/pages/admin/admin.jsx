@@ -39,7 +39,7 @@ export default class Admin extends Component {
           <Header>Header</Header>
           <Content style={{margin: 20, backgroundColor: '#fff'}}>
             <Switch>
-              <Redirect from='/' exact to='/home'/>
+              <Redirect  from='/' exact to='/home'/>
               <Route path='/home' component={Home}/>
               <Route path='/category' component={Category}/>
               <Route path='/product' component={Product}/>
